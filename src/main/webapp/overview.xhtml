@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:ng="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	template="/WEB-INF/templates/main.xhtml">
+	<ui:define name="content">
+		
+		<div>
+		</div>
+	
+		<div class="card crud-demo">
+    <h:form id="form">
+        <p:growl id="messages" showDetail="true" />
+
+
+        <p:dataTable id="dt-avail-cars" widgetVar="dtAvailCars" var="car" value="#{availableCarsController.availableCars}"
+            reflow="true" styleClass="products-table" selection="#{availableCarsController.selectedCar}" selectionMode="single"
+            rowKey="#{car.id}" paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom">
+            <f:facet name="header">
+                <div class="products-table-header">
+                    <span style="font-weight: bold">Available Cars</span>
+                    <span class="filter-container ui-input-icon-left"> <i class="pi pi-search"></i>
+                        <p:inputText id="globalFilter" onkeyup="PF('dtAvailCars').filter()" placeholder="Search" />
+                    </span>
+                </div>
+            </f:facet>
+
+            <p:column headerText="Make" sortBy="#{car.make}">
+                <h:outputText value="#{car.make}" />
+            </p:column>
+            <p:column headerText="Model" sortBy="#{car.model}">
+                <h:outputText value="#{car.model}" />
+            </p:column>
+            <p:column headerText="License Plate" sortBy="#{car.licensePlate}">
+                <h:outputText value="#{car.licensePlate}" />
+            </p:column>
+            <p:column headerText="Cost per Day" sortBy="#{car.costPerDay}">
+                <h:outputText value="#{car.costPerDay}" style="font-weight: 700">
+                    <f:convertNumber currencySymbol="€" type="currency" />
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Cost per Kilometer" sortBy="#{car.costPerKm}">
+                <h:outputText value="#{car.costPerKm}" style="font-weight: 700">
+                    <f:convertNumber currencySymbol="€" type="currency" />
+                </h:outputText>
+            </p:column>
+            <p:column exportable="false">
+                <p:commandButton value="Start Rental" update=":dialogs:manage-product-content"
+                    oncomplete="PF('manageProductDialog').show()"
+                    styleClass="edit-button ui-button-success" process="@this">
+                    <f:setPropertyActionListener value="#{car}" target="#{availableCarsController.selectedCar}" />
+                    <p:resetInput target=":dialogs:manage-product-content" />
+                </p:commandButton>
+            </p:column>
+
+        </p:dataTable>
+    </h:form>
+
+    <h:form id="dialogs">
+        <p:dialog header="Product Details" showEffect="fade" modal="true" widgetVar="manageProductDialog"
+            responsive="true">
+            <p:outputPanel id="manage-product-content" class="ui-fluid">
+                <p:outputPanel rendered="#{not empty availableCarsController.selectedCar}">
+                    <div class="field">
+                        <p:outputLabel for="make">make</p:outputLabel>
+                        <p:inputText id="make" value="#{availableCarsController.selectedCar.make}" required="true" />
+                    </div>
+                    <div class="field">
+                        <p:outputLabel for="description">Description</p:outputLabel>
+                        <p:inputTextarea id="description" value="#{availableCarsController.selectedCar.model}" />
+                    </div>
+                    <div class="formgrid grid">
+                        <div class="field col">
+                            <p:outputLabel for="price">Price</p:outputLabel>
+                            <p:inputNumber id="price" value="#{availableCarsController.selectedCar.costPerDay}" symbol=" EUR"
+                                symbolPosition="s" decimalSeparator="." thousandSeparator="," />
+                        </div>
+                    </div>
+                </p:outputPanel>
+            </p:outputPanel>
+
+            <f:facet name="footer">
+                <p:commandButton value="Save" icon="pi pi-check"
+                    update="manage-product-content" process="manage-product-content @this" />
+                <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageProductDialog').hide()"
+                    class="ui-button-secondary" type="button" />
+            </f:facet>
+        </p:dialog>
+
+
+        <p:confirmDialog global="true" showEffect="fade" width="300">
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+                icon="pi pi-times" />
+        </p:confirmDialog>
+    </h:form>
+</div>
+	</ui:define>
+</ui:composition>

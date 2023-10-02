@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+	<title>Car Rental System</title>
+	<!-- stylesheets here -->
+	<h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
+</h:head>
+<style>
+html, body, #page {
+	margin: 0px;
+	min-height: 100vh
+}
+
+.card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	word-wrap: break-word;
+	background-color: white;
+	background-clip: border-box;
+	border: 2px solid LightGray;
+	border-radius: 2px;
+}
+</style>
+<h:body>
+
+	<div id="page" style="height:100vh">
+
+		<div id="header" style="margin-bottom: 10px;">
+			<ui:include src="/WEB-INF/includes/header.xhtml" />
+		</div>
+
+		<div id="content"
+			style="margin-left: 5%; margin-right: 5%; height: 80%">
+			<ui:insert name="content">Content</ui:insert>
+		</div>
+
+	</div>
+</h:body>
+</html>
+

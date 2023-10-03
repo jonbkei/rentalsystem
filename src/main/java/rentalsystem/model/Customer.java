@@ -35,6 +35,10 @@ public class Customer implements Serializable, Persistable<Integer> {
 		return this.customerId == null;
 	}
 
+	public String getFullNameAndLicense() {
+		return firstName + " " + lastName + " " + licenseNumber;
+	}
+	
 	public String getFirstName() {
 		return firstName;
 	}

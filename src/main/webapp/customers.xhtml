@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:ng="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	template="/WEB-INF/templates/main.xhtml">
+	<ui:define name="content">
+		
+	
+		
+    <h:form id="form">
+        <p:growl id="messages" showDetail="true" />
+        
+        <h3>All Customers</h3>
+        
+        <p:toolbar>
+            <p:toolbarGroup>
+                <p:commandButton value="New" icon="pi pi-plus" actionListener="#{customersController.newCustomer}"
+                    update=":dialogs:manage-product-content" oncomplete="PF('manageProductDialog').show()"
+                    styleClass="ui-button-success" style="margin-right: .5rem">
+                    <p:resetInput target=":dialogs:manage-product-content" />
+                </p:commandButton>
+            </p:toolbarGroup>
+        </p:toolbar>
+        
+        <div class="card">
+        <p:dataTable id="dt-all-customers" widgetVar="dtAllCustomers" var="customer" value="#{customersController.allCustomers}"
+            reflow="true" styleClass="products-table" selection="#{customersController.selectedCustomer}" selectionMode="single"
+            rowKey="#{customer.id}" paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom">
+            <f:facet name="header">
+                <div class="products-table-header">
+                    <span class="filter-container ui-input-icon-left"> <i class="pi pi-search"></i>
+                        <p:inputText id="globalFilter" onkeyup="PF('dtAllCustomers').filter()" placeholder="Search" />
+                    </span>
+                </div>
+            </f:facet>
+
+            <p:column headerText="First Name" sortBy="#{customer.firstName}">
+                <h:outputText value="#{customer.firstName}" />
+            </p:column>
+            <p:column headerText="Last Name" sortBy="#{customer.lastName}">
+                <h:outputText value="#{customer.lastName}" />
+            </p:column>
+            <p:column headerText="License Country" sortBy="#{customer.licenseCountry}">
+                <h:outputText value="#{customer.licenseCountry}" />
+            </p:column>
+            <p:column headerText="License No" sortBy="#{customer.licenseNumber}">
+                <h:outputText value="#{customer.licenseNumber}" />
+            </p:column>
+            
+            <p:column exportable="false">
+                 <p:commandButton value="Edit" icon="pi pi-pencil" update=":dialogs:manage-product-content"
+                    oncomplete="PF('manageProductDialog').show()"
+                    styleClass="edit-button ui-button-warning" process="@this">
+                    <f:setPropertyActionListener value="#{customer}" target="#{customersController.selectedCustomer}" />
+                    <p:resetInput target=":dialogs:manage-product-content" />
+                </p:commandButton>
+                <p:commandButton value="Delete" class="ui-button-danger" icon="pi pi-trash"
+                                 process="@this"
+                                 oncomplete="PF('deleteCustomerDialog').show()">
+                    <f:setPropertyActionListener value="#{customer}" target="#{customersController.selectedCustomer}" />
+                </p:commandButton>
+            </p:column>
+        </p:dataTable>
+        </div>
+        
+    </h:form>
+
+    <h:form id="dialogs">
+    
+    	<p:dialog header="Customer Details" showEffect="fade" modal="true" widgetVar="manageProductDialog"
+            responsive="true">
+            <p:outputPanel id="manage-product-content" class="ui-fluid">
+                <p:outputPanel rendered="#{not empty customersController.selectedCustomer}">
+                    <div class="field">
+                        <p:outputLabel for="fname">First Name</p:outputLabel>
+                        <p:inputText id="fname" value="#{customersController.selectedCustomer.firstName}" required="true" />
+                    </div>
+                    <div class="field">
+                        <p:outputLabel for="lname">Last Name</p:outputLabel>
+                        <p:inputText id="lname" value="#{customersController.selectedCustomer.lastName}" required="true" />
+                    </div>
+                    <div class="field">
+                        <p:outputLabel for="licenseC">License Country</p:outputLabel>
+                        <p:inputText id="licenseC" value="#{customersController.selectedCustomer.licenseCountry}" required="true" />
+                    </div>
+                    <div class="field">
+                        <p:outputLabel for="licenseN">License No</p:outputLabel>
+                        <p:inputText id="licenseN" value="#{customersController.selectedCustomer.licenseNumber}" required="true" />
+                    </div>
+                </p:outputPanel>
+            </p:outputPanel>
+
+            <f:facet name="footer">
+                <p:commandButton value="Save" icon="pi pi-check" actionListener="#{customersController.saveCustomer}"
+                    update="manage-product-content" process="manage-product-content @this" />
+                <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageProductDialog').hide()"
+                    class="ui-button-secondary" type="button" />
+            </f:facet>
+        </p:dialog>
+    
+    
+        <p:confirmDialog widgetVar="deleteCustomerDialog" showEffect="fade" width="300"
+            message="Delete the customer?" header="Confirm" severity="warn">
+            <p:commandButton value="Yes" icon="pi pi-check" actionListener="#{customersController.deleteCustomer}"
+                process="@this"
+                oncomplete="PF('deleteCustomerDialog').hide()" />
+            <p:commandButton value="No" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
+                onclick="PF('deleteCustomerDialog').hide()" />
+        </p:confirmDialog>
+
+        <p:confirmDialog global="true" showEffect="fade" width="300">
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+                icon="pi pi-times" />
+        </p:confirmDialog>
+    </h:form>
+
+	</ui:define>
+</ui:composition>

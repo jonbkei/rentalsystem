@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:ng="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	template="/WEB-INF/templates/main.xhtml">
+	<ui:define name="content">
+		
+	
+		
+    <h:form id="form">
+        <p:growl id="messages" showDetail="true" />
+        
+        <h3>All Rentals</h3>
+        
+        <div class="card">
+        <p:dataTable id="dt-all-rentals" widgetVar="dtAllRentals" var="rental" value="#{rentalsController.allRentals}"
+            reflow="true" styleClass="products-table" selection="#{rentalsController.selectedRental}" selectionMode="single"
+            rowKey="#{rental.id}" paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom">
+            <f:facet name="header">
+                <div class="products-table-header">
+                    <span class="filter-container ui-input-icon-left"> <i class="pi pi-search"></i>
+                        <p:inputText id="globalFilter" onkeyup="PF('dtAllRentals').filter()" placeholder="Search" />
+                    </span>
+                </div>
+            </f:facet>
+
+            <p:column headerText="Car" sortBy="#{rental.car.make}">
+                <h:outputText value="#{rental.car.make} #{rental.car.model} #{rental.car.licensePlate}" />
+            </p:column>
+            <p:column headerText="Customer" sortBy="#{rental.customer.lastName}">
+                <h:outputText value="#{rental.customer.firstName} #{rental.customer.lastName}" />
+            </p:column>
+            <p:column headerText="Start date" sortBy="#{rental.startDateTime}">
+                <h:outputText value="#{rental.startDateTime}" style="font-weight: 700">
+                    <f:convertDateTime type="date" pattern="dd-MM-yyyy hh:mm"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Agreed return date" sortBy="#{rental.agreedEndDateTime}">
+                <h:outputText value="#{rental.agreedEndDateTime}" style="font-weight: 700">
+                    <f:convertDateTime type="date" pattern="dd-MM-yyyy hh:mm"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Actual return date" sortBy="#{rental.actualEndDateTime}">
+                <h:outputText value="#{rental.actualEndDateTime}" style="font-weight: 700">
+                    <f:convertDateTime type="date" pattern="dd-MM-yyyy hh:mm"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Final Cost" sortBy="#{rental.finalCost}">
+                <h:outputText value="#{rental.finalCost}" style="font-weight: 700">
+                    <f:convertNumber currencySymbol="€" type="currency" />
+                </h:outputText>
+            </p:column>
+            
+            <p:column headerText="Kilometer limit" sortBy="#{rental.kmLimit}">
+                <h:outputText value="#{rental.kmLimit}" />
+            </p:column>
+            
+            <p:column headerText="Start Mileage (km)" sortBy="#{rental.startMileageKm}">
+                <h:outputText value="#{rental.startMileageKm}" />
+            </p:column>
+            
+            <p:column headerText="End Mileage (km)" sortBy="#{rental.endMileageKm}">
+                <h:outputText value="#{rental.endMileageKm}" />
+            </p:column>
+            
+            <p:column exportable="false">
+                <p:commandButton value="Delete" class="ui-button-danger" icon="pi pi-trash"
+                                 process="@this"
+                                 oncomplete="PF('deleteRentalDialog').show()">
+                    <f:setPropertyActionListener value="#{rental}" target="#{rentalsController.selectedRental}" />
+                </p:commandButton>
+            </p:column>
+        </p:dataTable>
+        </div>
+        
+    </h:form>
+
+    <h:form id="dialogs">
+        <p:confirmDialog widgetVar="deleteRentalDialog" showEffect="fade" width="300"
+            message="Delete the rental?" header="Confirm" severity="warn">
+            <p:commandButton value="Yes" icon="pi pi-check" actionListener="#{rentalsController.deleteRental}"
+                process="@this"
+                oncomplete="PF('deleteRentalDialog').hide()" />
+            <p:commandButton value="No" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
+                onclick="PF('deleteRentalDialog').hide()" />
+        </p:confirmDialog>
+
+        <p:confirmDialog global="true" showEffect="fade" width="300">
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+                icon="pi pi-times" />
+        </p:confirmDialog>
+    </h:form>
+
+	</ui:define>
+</ui:composition>

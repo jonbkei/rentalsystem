@@ -18,10 +18,10 @@ public interface CarRepository extends AbstractRepository<Car, Integer> {
 			  FROM Car c
 			  LEFT OUTER JOIN Rental r ON r.car = c
 			 WHERE c.location = :location
-			   AND ( r.agreedEndDateTime IS NULL
-			    OR   CASE WHEN r.agreedEndDateTime < CURRENT_TIMESTAMP
-			   		 THEN r.actualEndDateTime IS NOT NULL AND r.actualEndDateTime < :search_date
-			   		 ELSE r.agreedEndDateTime < :search_date END)
+			   AND (( r.agreedEndDateTime = (SELECT MAX(l.agreedEndDateTime) FROM Rental l WHERE l.car = c)
+			   AND    r.agreedEndDateTime IS NOT NULL AND r.actualEndDateTime IS NOT NULL
+			   AND    r.agreedEndDateTime < :search_date AND r.actualEndDateTime < :search_date)
+			    OR    r.agreedEndDateTime IS NULL)
 			""")
 	List<Car> findAvailableCarsByLocationAndDate(@Param("location") Location location,@Param("search_date")  Date searchDate);
 }

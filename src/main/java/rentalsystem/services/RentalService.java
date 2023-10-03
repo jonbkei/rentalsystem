@@ -51,7 +51,7 @@ public class RentalService {
 	}
 	
 
-	List<Rental> getActiveRentalsByLocation(Location location) {
+	public List<Rental> getActiveRentalsByLocation(Location location) {
 		return rentalRepository.findActiveRentalsByLocation(location);
 	}
 	

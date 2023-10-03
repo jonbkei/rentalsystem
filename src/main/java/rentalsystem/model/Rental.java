@@ -30,13 +30,13 @@ public class Rental implements Serializable, Persistable<Integer> {
 	@Column
 	private Date actualEndDateTime;
 	@Column
-	private double startMileageKm;
+	private Double startMileageKm;
 	@Column
-	private double kmLimit;
+	private Double kmLimit;
 	@Column
-	private double endMileageKm;
+	private Double endMileageKm;
 	@Column
-	private double finalCost;
+	private Double finalCost;
 	
 	@Override
 	public Integer getId() {
@@ -88,35 +88,35 @@ public class Rental implements Serializable, Persistable<Integer> {
 		this.actualEndDateTime = actualEndDateTime;
 	}
 
-	public double getStartMileageKm() {
+	public Double getStartMileageKm() {
 		return startMileageKm;
 	}
 
-	public void setStartMileageKm(double startMileageKm) {
+	public void setStartMileageKm(Double startMileageKm) {
 		this.startMileageKm = startMileageKm;
 	}
 
-	public double getKmLimit() {
+	public Double getKmLimit() {
 		return kmLimit;
 	}
 
-	public void setKmLimit(double kmLimit) {
+	public void setKmLimit(Double kmLimit) {
 		this.kmLimit = kmLimit;
 	}
 
-	public double getEndMileageKm() {
+	public Double getEndMileageKm() {
 		return endMileageKm;
 	}
 
-	public void setEndMileageKm(double endMileageKm) {
+	public void setEndMileageKm(Double endMileageKm) {
 		this.endMileageKm = endMileageKm;
 	}
 
-	public double getFinalCost() {
+	public Double getFinalCost() {
 		return finalCost;
 	}
 
-	public void setFinalCost(double finalCost) {
+	public void setFinalCost(Double finalCost) {
 		this.finalCost = finalCost;
 	}
 

@@ -19,7 +19,7 @@ public interface RentalRepository extends AbstractRepository<Rental, Integer> {
 	@Query("""
 			SELECT r
 			  FROM Rental r
-			  JOIN Car c
+			  JOIN Car c ON r.car = c
 			 WHERE r.actualEndDateTime IS NULL
 			   AND c.location = :location""")
 	List<Rental> findActiveRentalsByLocation(@Param("location") Location location);

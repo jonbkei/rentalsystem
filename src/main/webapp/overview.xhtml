@@ -9,20 +9,23 @@
 	template="/WEB-INF/templates/main.xhtml">
 	<ui:define name="content">
 		
-		<div>
-		</div>
 	
-		<div class="card crud-demo">
+		
     <h:form id="form">
         <p:growl id="messages" showDetail="true" />
 
+		<h3>Available Cars</h3>
+		<div>
+			<h:outputText value="#{availableCarsController.noOfCarsCurrentlyAvailable}" /> of
+			<h:outputText value="#{availableCarsController.noOfCarsAtLocation}" /> Cars available.
+		</div>
 
+		<div class="card">
         <p:dataTable id="dt-avail-cars" widgetVar="dtAvailCars" var="car" value="#{availableCarsController.availableCars}"
             reflow="true" styleClass="products-table" selection="#{availableCarsController.selectedCar}" selectionMode="single"
             rowKey="#{car.id}" paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom">
             <f:facet name="header">
                 <div class="products-table-header">
-                    <span style="font-weight: bold">Available Cars</span>
                     <span class="filter-container ui-input-icon-left"> <i class="pi pi-search"></i>
                         <p:inputText id="globalFilter" onkeyup="PF('dtAvailCars').filter()" placeholder="Search" />
                     </span>
@@ -49,44 +52,138 @@
                 </h:outputText>
             </p:column>
             <p:column exportable="false">
-                <p:commandButton value="Start Rental" update=":dialogs:manage-product-content"
-                    oncomplete="PF('manageProductDialog').show()"
+                <p:commandButton value="Start Rental" update=":dialogs:start-rental-dialog"
+                	action="#{rentalsController.startRental(car)}"
+                    oncomplete="PF('startRentalDialog').show()"
                     styleClass="edit-button ui-button-success" process="@this">
                     <f:setPropertyActionListener value="#{car}" target="#{availableCarsController.selectedCar}" />
-                    <p:resetInput target=":dialogs:manage-product-content" />
+                    <p:resetInput target=":dialogs:start-rental-dialog" />
                 </p:commandButton>
             </p:column>
-
         </p:dataTable>
+        </div>
+        
+        <h3>Active Rentals</h3>
+        
+        <div class="card">
+        <p:dataTable id="dt-active-rentals" widgetVar="dtActiveRentals" var="rental" value="#{rentalsController.activeRentals}"
+            reflow="true" styleClass="products-table" selection="#{rentalsController.selectedRental}" selectionMode="single"
+            rowKey="#{rental.id}" paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom">
+            <f:facet name="header">
+                <div class="products-table-header">
+                    <span class="filter-container ui-input-icon-left"> <i class="pi pi-search"></i>
+                        <p:inputText id="globalFilter" onkeyup="PF('dtActiveRentals').filter()" placeholder="Search" />
+                    </span>
+                </div>
+            </f:facet>
+
+            <p:column headerText="Car" sortBy="#{rental.car.make}">
+                <h:outputText value="#{rental.car.make} #{rental.car.model} #{rental.car.licensePlate}" />
+            </p:column>
+            <p:column headerText="Customer" sortBy="#{rental.customer.lastName}">
+                <h:outputText value="#{rental.customer.firstName} #{rental.customer.lastName}" />
+            </p:column>
+            <p:column headerText="Agreed return date" sortBy="#{rental.agreedEndDateTime}">
+                <h:outputText value="#{rental.agreedEndDateTime}" style="font-weight: 700">
+                    <f:convertDateTime type="date" pattern="dd-MM-yyyy hh:mm"/>
+                </h:outputText>
+            </p:column>
+            <p:column exportable="false">
+                <p:commandButton value="End Rental" update=":dialogs:end-rental-dialog"
+                    oncomplete="PF('endRentalDialog').show()"
+                    styleClass="edit-button ui-button-warning" process="@this">
+                    <f:setPropertyActionListener value="#{rental}" target="#{rentalsController.selectedRental}" />
+                    <p:resetInput target=":dialogs:end-rental-dialog" />
+                </p:commandButton>
+            </p:column>
+        </p:dataTable>
+        </div>
+        
     </h:form>
 
     <h:form id="dialogs">
-        <p:dialog header="Product Details" showEffect="fade" modal="true" widgetVar="manageProductDialog"
+        <p:dialog header="Start Rental" showEffect="fade" modal="true" widgetVar="startRentalDialog"
             responsive="true">
-            <p:outputPanel id="manage-product-content" class="ui-fluid">
-                <p:outputPanel rendered="#{not empty availableCarsController.selectedCar}">
+            <p:outputPanel id="start-rental-dialog" class="ui-fluid">
+                <p:outputPanel rendered="#{not empty rentalsController.selectedRental}">
+                	<div class="field">
+                		<p:outputLabel for="s-car">Car</p:outputLabel>
+                		<p:inputText id="s-car" value="#{rentalsController.selectedRental.car.make} #{rentalsController.selectedRental.car.model} #{rentalsController.selectedRental.car.licensePlate}" disabled="true" />
+                	</div>
                     <div class="field">
-                        <p:outputLabel for="make">make</p:outputLabel>
-                        <p:inputText id="make" value="#{availableCarsController.selectedCar.make}" required="true" />
+                        <p:outputLabel for="s-customer">Customer</p:outputLabel>
+                        <p:selectOneMenu id="s-customer" value="#{rentalsController.selectedRental.customer}"
+                        	converter="#{customerConverter}" dynamic="true" required="true"
+                        	filter="true" filterMatchMode="startsWith" filterNormalize="true">
+                    		<f:selectItems value="#{customersController.allCustomers}" var="customer"
+                  				itemValue="#{customer}" itemLabel="#{customer.fullNameAndLicense}"/>
+                		</p:selectOneMenu>
                     </div>
                     <div class="field">
-                        <p:outputLabel for="description">Description</p:outputLabel>
-                        <p:inputTextarea id="description" value="#{availableCarsController.selectedCar.model}" />
+                        <p:outputLabel for="s-kmlimit">Distance Limit (km)</p:outputLabel>
+                        <p:inputNumber id="s-kmlimit" value="#{rentalsController.selectedRental.kmLimit}" decimalSeparator="." thousandSeparator=","/>
                     </div>
-                    <div class="formgrid grid">
-                        <div class="field col">
-                            <p:outputLabel for="price">Price</p:outputLabel>
-                            <p:inputNumber id="price" value="#{availableCarsController.selectedCar.costPerDay}" symbol=" EUR"
-                                symbolPosition="s" decimalSeparator="." thousandSeparator="," />
-                        </div>
+                    <div class="field">
+                        <p:outputLabel for="s-startmileage">Start Mileage (km)</p:outputLabel>
+                        <p:inputNumber id="s-startmileage" value="#{rentalsController.selectedRental.startMileageKm}" decimalSeparator="." thousandSeparator=","
+                        	required="true"/>
+                    </div>
+                	<div class="field">
+						<p:outputLabel for="s-startDate" value="Start date" />
+						<p:datePicker id="s-startDate" value="#{rentalsController.selectedRental.startDateTime}" showTime="true" pattern="dd-MM-yyyy" 
+							required="true"/>
+					</div>
+					<div class="field">
+						<p:outputLabel for="s-agrEndDate" value="Agreed return date" />
+						<p:datePicker id="s-agrEndDate" value="#{rentalsController.selectedRental.agreedEndDateTime}" showTime="true" pattern="dd-MM-yyyy" 
+							required="true"/>
+					</div>
+                </p:outputPanel>
+            </p:outputPanel>
+
+            <f:facet name="footer">
+                <p:commandButton value="Save" icon="pi pi-check" actionListener="#{rentalsController.saveRental}"
+                    update="start-rental-dialog" process="start-rental-dialog @this" />
+                <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('startRentalDialog').hide()"
+                    class="ui-button-secondary" type="button" />
+            </f:facet>
+        </p:dialog>
+        
+        
+        <p:dialog header="End Rental" showEffect="fade" modal="true" widgetVar="endRentalDialog"
+            responsive="true">
+            <p:outputPanel id="end-rental-dialog" class="ui-fluid">
+                <p:outputPanel rendered="#{not empty rentalsController.selectedRental}">
+                	<div class="field">
+                		<p:outputLabel for="e-car">Car</p:outputLabel>
+                		<p:inputText id="e-car" value="#{rentalsController.selectedRental.car.make} #{rentalsController.selectedRental.car.model} #{rentalsController.selectedRental.car.licensePlate}" disabled="true" />
+                	</div>
+                	<div class="field">
+                		<p:outputLabel for="e-customer">Customer</p:outputLabel>
+                		<p:inputText id="e-customer" value="#{rentalsController.selectedRental.customer.fullNameAndLicense}" disabled="true" />
+                	</div>
+                    <div class="field">
+                        <p:outputLabel for="e-endmileage">End Mileage (km)</p:outputLabel>
+                        <p:inputNumber id="e-endmileage" value="#{rentalsController.selectedRental.endMileageKm}" decimalSeparator="." thousandSeparator=","
+                        	required="true"/>
+                    </div>
+                    <div class="field">
+						<p:outputLabel for="e-actEndDate" value="Actual return date" />
+						<p:datePicker id="e-actEndDate" value="#{rentalsController.selectedRental.actualEndDateTime}" showTime="true" pattern="dd-MM-yyyy" 
+							required="true"/>
+					</div>
+					<div class="field col">
+	                    <p:outputLabel for="e-finalCost">Final Cost</p:outputLabel>
+	                    <p:inputNumber id="e-finalCost" value="#{rentalsController.selectedRental.finalCost}" symbol=" EUR"
+	                        symbolPosition="s" decimalSeparator="." thousandSeparator="," />
                     </div>
                 </p:outputPanel>
             </p:outputPanel>
 
             <f:facet name="footer">
-                <p:commandButton value="Save" icon="pi pi-check"
-                    update="manage-product-content" process="manage-product-content @this" />
-                <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageProductDialog').hide()"
+                <p:commandButton value="Save" icon="pi pi-check" actionListener="#{rentalsController.saveRental}"
+                    update="end-rental-dialog" process="end-rental-dialog @this" />
+                <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('endRentalDialog').hide()"
                     class="ui-button-secondary" type="button" />
             </f:facet>
         </p:dialog>
@@ -98,6 +195,6 @@
                 icon="pi pi-times" />
         </p:confirmDialog>
     </h:form>
-</div>
+
 	</ui:define>
 </ui:composition>

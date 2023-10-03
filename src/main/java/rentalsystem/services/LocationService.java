@@ -1,6 +1,7 @@
 package rentalsystem.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -27,6 +28,10 @@ public class LocationService {
 	
 	public List<Location> getAllLocations() {
 		return locationRepository.findAll();
+	}
+	
+	public Optional<Location> getById(Integer id) {
+		return locationRepository.findById(id);
 	}
 	
 }

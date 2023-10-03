@@ -7,7 +7,69 @@
 	xmlns:p="http://primefaces.org/ui">
 <body>
 	<ui:composition>
-		<h3>Car Rental System</h3>
+		<div class="card">
+			<h:form id="rental-menu">
+				<p:growl id="messages" />
+
+				<p:menubar>
+
+					<p:menuitem value="Overview" icon="pi pi-fw pi-home"
+						outcome="overview.xhtml" />
+
+					<p:divider layout="vertical" />
+
+					<p:menuitem value="Cars" icon="pi pi-fw pi-car"
+						outcome="cars.xhtml" />
+
+					<p:divider layout="vertical" />
+
+					<p:menuitem value="Customers" icon="pi pi-fw pi-user"
+						outcome="customers.xhtml" />
+
+					<p:divider layout="vertical" />
+
+					<p:menuitem value="Rentals" icon="pi pi-fw pi-list"
+						outcome="rentals.xhtml" />
+
+					<f:facet name="options">
+						<p:outputLabel style="margin-right: 20px;"
+							value="#{currentLocationBean.currentLocation.name}" />
+						<p:commandButton value="Change Location" styleClass="ui-button-info" update=":location-dialog:pick-location-dialog"
+                    oncomplete="PF('pickLocationDialog').show()"/>
+					</f:facet>
+				</p:menubar>
+			</h:form>
+		</div>
+		<h:form id="location-dialog">
+
+			<p:dialog header="Pick Location" showEffect="fade" modal="true"
+				widgetVar="pickLocationDialog" responsive="true">
+				<p:outputPanel id="pick-location-dialog" class="ui-fluid">
+					<p:outputPanel>
+						<div class="field">
+							<p:outputLabel for="location">Location</p:outputLabel>
+							<p:selectOneMenu id="location"
+								value="#{locationsController.tempLocation}"
+								converter="#{locationConverter}" dynamic="true" required="true">
+								<f:selectItems value="#{locationsController.allLocations}"
+									var="location" itemValue="#{location}"
+									itemLabel="#{location.name}" />
+							</p:selectOneMenu>
+						</div>
+					</p:outputPanel>
+				</p:outputPanel>
+				<f:facet name="footer">
+					<p:commandButton value="Save" icon="pi pi-check"
+						actionListener="#{locationsController.updateLocation}"
+						update="pick-location-dialog"
+						process="pick-location-dialog @this" />
+					<p:commandButton value="Cancel" icon="pi pi-times"
+						onclick="PF('pickLocationDialog').hide()"
+						class="ui-button-secondary" type="button" />
+				</f:facet>
+			</p:dialog>
+		</h:form>
+
 	</ui:composition>
 </body>
 </html>

@@ -19,7 +19,8 @@ public class CurrentLocationBean implements Serializable {
 	private LocationService locationService;
 	
 	private Location currentLocation;
-
+	
+	
 	public Location getCurrentLocation() {
 		if(this.currentLocation == null) {
 			this.currentLocation = locationService.getAllLocations().get(0);
